@@ -1,21 +1,91 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "elasticsearch-index-builder"
-version = "0.1.0"
-description = "elasticsearch index builder implementation"
+version = "1.0.0"
+description = "Build Elasticsearch indices from files: mapping inference, batched bulk loading, zero-downtime alias swaps"
+readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Retsumdk", email = "Retsumdk@users.noreply.github.com" }]
+keywords = [
+    "elasticsearch",
+    "index",
+    "bulk",
+    "mapping",
+    "reindex",
+    "alias",
+    "search",
+    "opensearch",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = []
 
-[tool.setuptools]
-package-dir = { "" = "src" }
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "build>=1.2",
+]
+
+[project.scripts]
+esib = "esib.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Retsumdk/elasticsearch-index-builder"
+Source = "https://github.com/Retsumdk/elasticsearch-index-builder"
+Issues = "https://github.com/Retsumdk/elasticsearch-index-builder/issues"
+Documentation = "https://github.com/Retsumdk/elasticsearch-index-builder#readme"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+esib = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+addopts = "-q"
 
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4", "RET", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011", "RUF012"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["src/esib", "tests"]
+strict = true
+warn_unreachable = true
+show_error_codes = true
+
+[tool.coverage.run]
+branch = true
+source = ["esib"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 90
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]

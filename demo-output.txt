@@ -1,0 +1,30 @@
+esib demo — a complete index build, no cluster and no network
+
+1. infer a mapping from 7 sample documents
+   category    keyword
+   in_stock    boolean
+   legacy_id   text + keyword sub-field
+   name        keyword
+   price       double
+   released    date (ISO-8601)
+   sku         keyword
+   7 fields from 7 documents
+   warning: field 'legacy_id' holds both numbers and strings; mapped as text — sort or aggregate on the `.keyword` sub-field instead
+
+2. build a versioned index and point the alias at it
+   index products-20260101T120000Z
+   7 of 8 documents accepted in 2 bulk requests
+   rejected sku-1008: mapper_parsing_exception — failed to parse field [price] of type [double]: value of type [str] is not accepted
+   1 request retried after 429 (Retry-After honoured)
+   alias products -> products-20260101T120000Z
+
+3. read the alias back with a point-in-time scan
+   page 1: 4 hits (sku-1001 … sku-1004)
+   page 2: 3 hits (sku-1005 … sku-1007)
+   7 documents reachable through the alias
+
+4. re-run the same load to show it is idempotent
+   7 updated, 0 created, 0 rejected
+   count is still 7
+
+done: 7 documents searchable through 'products'
